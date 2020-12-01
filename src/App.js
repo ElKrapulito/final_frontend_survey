@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import AuthRoutes from "./routes/authroutes";
+import Login from "./pages/login/index";
+import Register from "./pages/register/index";
+import Survey from "./pages/survey/index";
+import Navbar from "./components/navbar";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Navbar />
+      <Container className="text-white bg-dark">
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/survey" component={Survey} />
+          <PrivateRoute>
+            <AuthRoutes />
+          </PrivateRoute>
+        </Switch>
+      </Container>
+    </BrowserRouter>
   );
 }
+
+const isUserAuthenticated = () => {
+  return sessionStorage.getItem("userToken");
+};
+
+const PrivateRoute = ({ children, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        isUserAuthenticated() ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+};
 
 export default App;
