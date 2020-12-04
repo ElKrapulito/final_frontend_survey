@@ -36,6 +36,9 @@ export default () => {
           <Link className="nav-link" to="/register">
             Register
           </Link>
+          <Link className="nav-link" to="/survey">
+            Encuestas
+          </Link>
         </Nav>
       ) : (
         ""

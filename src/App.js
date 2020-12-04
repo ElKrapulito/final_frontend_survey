@@ -5,7 +5,9 @@ import { Container } from "react-bootstrap";
 import AuthRoutes from "./routes/authroutes";
 import Login from "./pages/login/index";
 import Register from "./pages/register/index";
+import SurveyForm from "./pages/survey/form";
 import Survey from "./pages/survey/index";
+import SurveyDisplay from "./pages/survey/display";
 import Navbar from "./components/navbar";
 
 function App() {
@@ -16,6 +18,9 @@ function App() {
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
+          <Route path="/survey/new" component={SurveyForm} />
+          <Route path="/survey/:id/edit" component={SurveyForm} />
+          <Route path="/survey/:id" component={SurveyDisplay} />
           <Route path="/survey" component={Survey} />
           <PrivateRoute>
             <AuthRoutes />
