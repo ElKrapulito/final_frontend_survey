@@ -6,7 +6,7 @@ import { useHistory, useParams } from "react-router-dom";
 import Question from "../../components/questionLayout";
 import { DELETE, EDIT, POST, PUT } from "../../shared/methods";
 import requestHandler from "../../shared/requestHandler";
-import { surveyUrl } from "../../shared/urls";
+import { questionUrl, surveyUrl, inputUrl } from "../../shared/urls";
 
 export default () => {
   const [survey, setSurvey] = useState({
@@ -17,7 +17,7 @@ export default () => {
     auth: "0",
     state: "0",
     count: "0",
-    user_id: "1",
+    user_id: sessionStorage.getItem('user_id'),
     questions: [],
   });
   const addQuestion = () => {
@@ -74,12 +74,14 @@ export default () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     let parentname = e.currentTarget.getAttribute("parentname");
-    console.log(`${name} : ${value}, ${parentname}`);
     const i = survey.questions.findIndex(
-      (question) => question.name === parentname || `question_${question.id}` === parentname
+      (question) =>
+        question.name === parentname || `question_${question.id}` === parentname
     );
     let arr = survey.questions[i].inputs;
-    let index = arr.findIndex((obj) => obj.name === name || `input_${obj.id}` === name);
+    let index = arr.findIndex(
+      (obj) => obj.name === name || `input_${obj.id}` === name
+    );
     arr[index].value = value;
     setSurvey({ ...survey, arr });
   };
@@ -89,7 +91,8 @@ export default () => {
     let parentname = e.currentTarget.getAttribute("parentname");
     let arr = survey.questions;
     const i = survey.questions.findIndex(
-      (question) => question.name === parentname || `question_${question.id}` === parentname
+      (question) =>
+        question.name === parentname || `question_${question.id}` === parentname
     );
     arr[i] = { ...arr[i], [name]: value };
     setSurvey({ ...survey, questions: arr });
@@ -126,7 +129,6 @@ export default () => {
 
   const handleChangeSurvey = (e) => {
     const { name, value } = e.target;
-    console.log(`${name} : ${e.target.checked}`);
     if (name === "auth" || name === "state") {
       setSurvey({ ...survey, [name]: e.target.checked ? "1" : "0" });
     } else {
@@ -146,32 +148,39 @@ export default () => {
 
   const handleSubmit = async () => {
     let res;
-    console.log(id);
     if (!id) {
-      console.log("posteando");
       res = await mainHandler(POST, surveyUrl, survey, null);
     } else {
       res = await mainHandler(PUT, surveyUrl, survey, id);
     }
     if (res.data.message === "success") {
-      history.push('/survey');
+      history.push("/survey");
     } else {
-      alert('error!');
+      alert("error!");
     }
   };
 
   const handleDeleteQuestion = async (question) => {
-    let res = await mainHandler(DELETE, surveyUrl, null, id);
-    if(res.data.message == "success"){
-      // let arr = survey.questions;
-      // arr[input.survey_id] = arr[input.survey_id].inputs.filter((obj) => obj.id === input.id);
-      // setSurvey({...survey, questions: arr})
+    let res = await mainHandler(DELETE, questionUrl, null, question.id);
+    if (res.data.message == "success") {
       let arr = survey.questions;
-      arr = arr.filter((obj) => obj.id !== question.id || obj.name !== question.name);
-      setSurvey({...survey, questions: arr});
+      arr = arr.filter(
+        (obj) => obj.id !== question.id || obj.name !== question.name
+      );
+      setSurvey({ ...survey, questions: arr });
     }
+  };
 
-  }
+  const handleDeleteInput = async (input) => {
+    let res = await mainHandler(DELETE,inputUrl, null, input.id);
+    if (res.data.message == "success") {
+      let arr = survey.questions;
+      let i = arr.findIndex((obj) => obj.id === input.question_id);
+      arr[i].inputs = arr[i].inputs.filter((obj) => obj.id !== input.id);
+
+      setSurvey({ ...survey, questions: arr });
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -207,7 +216,7 @@ export default () => {
             type="date"
             onChange={handleChangeSurvey}
             name="begin_date"
-            value={moment(survey.begin_date).format('YYYY-MM-DD')}
+            value={moment(survey.begin_date).format("YYYY-MM-DD")}
           />
         </Form.Group>
         <Form.Group>
@@ -216,7 +225,7 @@ export default () => {
             type="date"
             onChange={handleChangeSurvey}
             name="end_date"
-            value={moment(survey.end_date).format('YYYY-MM-DD')}
+            value={moment(survey.end_date).format("YYYY-MM-DD")}
           />
         </Form.Group>
         <Form.Group controlId="authCheckbox">
@@ -226,7 +235,7 @@ export default () => {
             onChange={handleChangeSurvey}
             name="auth"
             label="Autenticado"
-            checked={survey.auth == 1? true: false}
+            checked={survey.auth == 1 ? true : false}
           />
         </Form.Group>
         <Form.Group controlId="stateCheckBox">
@@ -236,7 +245,7 @@ export default () => {
             onChange={handleChangeSurvey}
             name="state"
             label="Abierto"
-            checked={survey.state == 1? true: false}
+            checked={survey.state == 1 ? true : false}
           />
         </Form.Group>
         <Button onClick={addQuestion} className="mb-3">
@@ -268,6 +277,7 @@ export default () => {
                             handleQuestionChanges={handleQuestionChanges}
                             handleOnDragEnd={handleOnDragEnd}
                             handleDeleteQuestion={handleDeleteQuestion}
+                            handleDeleteInput={handleDeleteInput}
                             question={question}
                           />
                         </li>
@@ -280,8 +290,17 @@ export default () => {
             )}
           </Droppable>
         </DragDropContext>
-        <Button className="mr-3" onClick={handleSubmit}>Guardar</Button>
-        <Button variant="danger" onClick={() => {history.goBack()}}>Volver</Button>
+        <Button className="mr-3" onClick={handleSubmit}>
+          Guardar
+        </Button>
+        <Button
+          variant="danger"
+          onClick={() => {
+            history.goBack();
+          }}
+        >
+          Volver
+        </Button>
       </Col>
     </Row>
   );

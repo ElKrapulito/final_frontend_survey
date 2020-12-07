@@ -23,7 +23,7 @@ export default () => {
     if(res.data.message === "success"){
       sessionStorage.setItem('userToken', res.data.access_token);
       sessionStorage.setItem('user_id', res.data.user_id);
-      history.push('/category');
+      history.push('/survey');
       window.location.reload();
     }
     console.log(res.data);

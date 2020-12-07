@@ -2,6 +2,7 @@ import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { Button, Form } from "react-bootstrap";
 import { Input } from "./inputText";
+import "./List.css"
 
 export default (props) => {
   const question = props.question;
@@ -65,10 +66,10 @@ export default (props) => {
                     {inputs.map((input, index) => {
                       let id = `input_${index}`;
                       return (
-                        <Draggable key={index} draggableId={id} index={index}>
+                        <Draggable key={index} draggableId={id} index={index} >
                           {(provided) => (
                             <li
-                              className="list-group-item"
+                              className="list-group-item item-list"
                               parentname={question.name}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
@@ -86,6 +87,9 @@ export default (props) => {
                                     : `question_${question.id}`
                                 }
                               />
+                              <Button onClick={() => {props.handleDeleteInput(input)}} className="btn-sm ml-2" variant="danger">
+                                X
+                              </Button>
                             </li>
                           )}
                         </Draggable>

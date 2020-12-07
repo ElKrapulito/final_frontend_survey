@@ -12,17 +12,17 @@ export default () => {
   };
   return (
     <Navbar bg="dark" className="border border-white" variant="dark">
-      <Link className="nav-link" to="/home">Home</Link>
+      {/* <Link className="nav-link" to="/home">Home</Link> */}
       {sessionStorage.getItem("userToken") ? (
         <Nav className="mr-auto">
-          <Link className="nav-link" to="/category">
-            Category
+          <Link className="nav-link" to="/survey">
+            Mis Encuestas
           </Link>
-          <Link className="nav-link" to="/gif">
-            Gif
+          <Link className="nav-link" to="/answer">
+            Mis Respuestas
           </Link>
           <Link className="nav-link" onClick={logOut}>
-            Log out
+            Salir
           </Link>
         </Nav>
       ) : (
@@ -31,23 +31,15 @@ export default () => {
       {!sessionStorage.getItem("userToken") ? (
         <Nav inline className="mr-auto">
           <Link className="nav-link" to="/login">
-            Login
+            Ingresar
           </Link>
           <Link className="nav-link" to="/register">
-            Register
-          </Link>
-          <Link className="nav-link" to="/survey">
-            Encuestas
+            Registrarse
           </Link>
         </Nav>
       ) : (
         ""
       )}
-
-      {/* <Form inline>
-        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-        <Button variant="outline-info">Search</Button>
-      </Form> */}
     </Navbar>
   );
 };

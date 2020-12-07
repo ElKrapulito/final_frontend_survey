@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
-import { DELETE, GET } from "../../shared/methods";
+import { DELETE, EDIT, GET } from "../../shared/methods";
 import requestHandler from "../../shared/requestHandler";
-import { surveyUrl } from "../../shared/urls";
+import { surveyUrl, userSurveyrUrl } from "../../shared/urls";
 
 export default () => {
   const [surveys, setSurveys] = useState([]);
@@ -12,7 +12,7 @@ export default () => {
   let history = useHistory();
 
   const fetchSurveys = async () => {
-    let res = await mainHandler(GET, surveyUrl, null, null);
+    let res = await mainHandler(EDIT, userSurveyrUrl, null, sessionStorage.getItem('user_id'));
     setSurveys(res.data.surveys);
   };
 
